@@ -1,0 +1,31 @@
+{
+  "name": "ts-graphql-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GraphQL gateway that federates two REST microservices (Users, Notes) into one schema, using DataLoader to fix the N+1 query problem.",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n users,notes,gateway -c blue,green,magenta \"tsx watch src/services/users.main.ts\" \"tsx watch src/services/notes.main.ts\" \"tsx watch src/gateway/index.ts\"",
+    "build": "tsc -p tsconfig.json",
+    "start": "concurrently -k -n users,notes,gateway -c blue,green,magenta \"node dist/services/users.main.js\" \"node dist/services/notes.main.js\" \"node dist/gateway/index.js\"",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "dataloader": "^2.2.2",
+    "express": "^4.19.2",
+    "graphql": "^16.9.0",
+    "graphql-yoga": "^5.7.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.7.4",
+    "concurrently": "^9.0.1",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.1"
+  }
+}
