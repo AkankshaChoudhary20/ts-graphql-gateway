@@ -39,7 +39,7 @@ export async function fetchAllUsers(): Promise<UserDTO[]> {
 }
 
 export async function fetchUserById(id: string): Promise<UserDTO | null> {
-  const res = await fetch(`${usersBaseUrl()}/users/${id}`);
+  const res = await fetch(`${usersBaseUrl()}/users/${encodeURIComponent(id)}`);
   if (res.status === 404) return null;
   if (!res.ok) {
     throw new Error(`Request to fetch user ${id} failed with status ${res.status}`);
@@ -54,7 +54,7 @@ export async function fetchUserById(id: string): Promise<UserDTO | null> {
 export async function fetchUsersByIds(ids: readonly string[]): Promise<UserDTO[]> {
   const unique = Array.from(new Set(ids));
   if (unique.length === 0) return [];
-  return getJson<UserDTO[]>(`${usersBaseUrl()}/users?ids=${unique.join(",")}`);
+  return getJson<UserDTO[]>(`${usersBaseUrl()}/users?ids=${encodeURIComponent(unique.join(","))}`);
 }
 
 export async function fetchAllNotes(): Promise<NoteDTO[]> {
@@ -62,7 +62,7 @@ export async function fetchAllNotes(): Promise<NoteDTO[]> {
 }
 
 export async function fetchNoteById(id: string): Promise<NoteDTO | null> {
-  const res = await fetch(`${notesBaseUrl()}/notes/${id}`);
+  const res = await fetch(`${notesBaseUrl()}/notes/${encodeURIComponent(id)}`);
   if (res.status === 404) return null;
   if (!res.ok) {
     throw new Error(`Request to fetch note ${id} failed with status ${res.status}`);
