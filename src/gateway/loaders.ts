@@ -22,8 +22,11 @@ export function createUserLoader(): DataLoader<string, UserDTO | null> {
  * full notes list. All keys are mapped to the same underlying fetch.
  */
 export function createNotesByAuthorLoader(): DataLoader<string, NoteDTO[]> {
+  // Nested resolvers may load new authors in later ticks of the same request.
+  // Share the snapshot across those batches, not just within one batch.
+  let notes: Promise<NoteDTO[]> | undefined;
   return new DataLoader<string, NoteDTO[]>(async (authorIds) => {
-    const allNotes = await fetchAllNotes();
+    const allNotes = await (notes ??= fetchAllNotes());
     return authorIds.map((authorId) => allNotes.filter((n) => n.authorId === authorId));
   });
 }
