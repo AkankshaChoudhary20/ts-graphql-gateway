@@ -19,3 +19,17 @@ it("shares one notes snapshot across separate batches within a request", async (
   await anotherRequest.load("a");
   expect(fetch).toHaveBeenCalledTimes(2);
 });
+
+
+it("retries a failed notes snapshot in a later batch without poisoning the request", async () => {
+  const note = { id: "n1", authorId: "a", title: "Recovered", body: "text" };
+  const fetch = vi.fn()
+    .mockRejectedValueOnce(new Error("temporary outage"))
+    .mockResolvedValue({ ok: true, json: async () => [note] });
+  vi.stubGlobal("fetch", fetch);
+  const loader = createNotesByAuthorLoader();
+  await expect(loader.load("a")).rejects.toThrow("temporary outage");
+  expect(await loader.load("a")).toEqual([note]);
+  expect(await loader.load("other")).toEqual([]);
+  expect(fetch).toHaveBeenCalledTimes(2);
+});

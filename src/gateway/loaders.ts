@@ -26,7 +26,11 @@ export function createNotesByAuthorLoader(): DataLoader<string, NoteDTO[]> {
   // Share the snapshot across those batches, not just within one batch.
   let notes: Promise<NoteDTO[]> | undefined;
   return new DataLoader<string, NoteDTO[]>(async (authorIds) => {
-    const allNotes = await (notes ??= fetchAllNotes());
+    const allNotes = await (notes ??= fetchAllNotes().catch((error) => {
+      // A failed batch must remain retryable, as with DataLoader itself.
+      notes = undefined;
+      throw error;
+    }));
     return authorIds.map((authorId) => allNotes.filter((n) => n.authorId === authorId));
   });
 }
