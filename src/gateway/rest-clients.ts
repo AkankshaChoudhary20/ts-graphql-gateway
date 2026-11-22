@@ -19,11 +19,11 @@ export interface NoteDTO {
 }
 
 function usersBaseUrl(): string {
-  return process.env.USERS_SERVICE_URL ?? "http://localhost:4001";
+  return (process.env.USERS_SERVICE_URL ?? "http://localhost:4001").replace(/\/+$/, "");
 }
 
 function notesBaseUrl(): string {
-  return process.env.NOTES_SERVICE_URL ?? "http://localhost:4002";
+  return (process.env.NOTES_SERVICE_URL ?? "http://localhost:4002").replace(/\/+$/, "");
 }
 
 async function getJson<T>(url: string): Promise<T> {
